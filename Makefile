@@ -45,7 +45,7 @@ bin/netifd: netifd
 	(cd netifd; cmake .; make) 
 	cp netifd/netifd bin/
 	
-bin/ubus bin/libubus.so: lib/libubox.so lib/$(JSONC).so ubus
+bin/ubus lib/libubus.so: bin lib lib/libubox.so lib/$(JSONC).so ubus
 	(cd ubus; cmake .; make) 
 	cp ubus/ubus ubus/ubusd bin/
 	cp ubus/libubus* lib/
@@ -91,7 +91,7 @@ bin/uci lib/libuci.so: uci
 uhttpd: 
 	git clone https://github.com/mkschreder/juci-uhttpd.git $@
 
-bin/uhttpd bin/uhttpd_ubus.so: uhttpd
+bin/uhttpd bin/uhttpd_ubus.so: lib/libubox.so lib/libubus.so uhttpd
 	(cd uhttpd; cmake .; make)
 	cp uhttpd/uhttpd uhttpd/uhttpd_ubus.so bin/
 	

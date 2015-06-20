@@ -20,17 +20,15 @@ lib bin:
 
 $(JSONC): 
 	git clone https://github.com/mkschreder/juci-json-c.git $(JSONC)
-
-$(JSONC)/Makefile: $(JSONC)
 	(cd $(JSONC); ./configure)
-	
-lib/$(JSONC).so: $(JSONC)/Makefile 
+
+lib/$(JSONC).so: $(JSONC)
 	mkdir -p lib
 	make -C $(JSONC)
 	cp $(JSONC)/.libs/libjson-c.* lib/
 
 libnl: 
-	https://github.com/mkschreder/juci-libnl.git libnl
+	git clone https://github.com/mkschreder/juci-libnl.git libnl
 	(cd libnl; ./configure)
 	
 lib/libnl.so: libnl
@@ -41,11 +39,11 @@ lib/libnl.so: libnl
 netifd: 
 	git clone https://github.com/mkschreder/juci-netifd.git netifd
 
-bin/netifd: netifd
+bin/netifd: lib/libnl.so netifd
 	(cd netifd; cmake .; make) 
 	cp netifd/netifd bin/
 	
-bin/ubus bin/libubus.so: lib/libubox.so lib/$(JSONC).so ubus
+bin/ubus lib/libubus.so: lib/libubox.so lib/$(JSONC).so ubus
 	(cd ubus; cmake .; make) 
 	cp ubus/ubus ubus/ubusd bin/
 	cp ubus/libubus* lib/
@@ -59,10 +57,10 @@ ubox:
 bin/ubox: 
 	(cd ubox; cmake .; make)
 	
-#bin/ubox: ubox
-#	(cd ubox; cmake . ; make) 
+questd: 
+	git clone https://github.com/mkschreder/juci-questd.git questd 
 	
-bin/questd: uci lib/libuci.so lib/libubus.so lib/libubox.so
+bin/questd: questd bin/uci lib/libuci.so lib/libubus.so lib/libubox.so
 	make -C questd 
 	cp questd/questd bin/ 
 	
@@ -83,7 +81,7 @@ bin/rpcd: rpcd
 uci: 
 	git clone https://github.com/mkschreder/juci-uci.git $@
 
-bin/uci lib/libuci.so: uci
+bin/uci lib/libuci.so: lib/libubox.so uci
 	(cd uci; cmake .; make) 
 	cp uci/uci bin/
 	cp uci/libuci.* lib/

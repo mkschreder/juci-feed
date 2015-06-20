@@ -1,0 +1,8 @@
+*.o
+*.la
+*.so
+./bin
+./lib
+*tar.gz
+bin
+lib

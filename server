@@ -1,0 +1,30 @@
+cd bin
+export LD_LIBRARY_PATH=.
+
+for i in "$@"
+do
+case $i in
+	stop)
+		killall -SIGHUP questd
+		killall -SIGHUP  netifd
+		killall -SIGHUP  ubusd
+		killall -SIGHUP  rpcd
+		killall -SIGHUP  uhttpd
+		shift # past argument=value
+	;;
+	start)
+		rm -rf /var/run/rpcd/
+		ubusd &
+		rpcd&
+		sleep 1
+		questd&
+		netifd&
+		uhttpd -p 8080 -u /ubus -h $(pwd)/../juci-source/htdocs/
+		shift # past argument=value
+	;;
+	*)
+		echo "Please specify start | stop.."
+	;;
+esac
+done
+

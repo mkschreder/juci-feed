@@ -1,6 +1,6 @@
-JSONC:=json-c-0.11
-CFLAGS+=-Iubus -I$(JSONC) -DJSONC
-LD_FLAGS:=-Lubus -L$(JSONC) -ljson-c
+JSONC:=json-c
+CFLAGS:=-I$(shell pwd) -Iuci -Ilibubox -Iubus -I$(JSONC) -DJSONC
+LDFLAGS:=-L$(shell pwd) -Llib 
 PROGS:=bin/uci bin/questd bin/rpcd bin/ubus bin/ubusd bin/uhttpd bin/netifd
 LIBS:= lib/libuci.so lib/libblobmsg_json.so lib/libubox.so lib/libubus.so lib/libuci.so lib/libnl.so
 
@@ -19,21 +19,18 @@ lib bin:
 	mkdir -p $@
 
 $(JSONC): 
-	wget https://s3.amazonaws.com/json-c_releases/releases/$(JSONC).tar.gz 
-	tar xzf $(JSONC).tar.gz 
+	git clone https://github.com/mkschreder/juci-json-c.git $(JSONC)
 
-$(JSONC)/Makefile: 
+$(JSONC)/Makefile: $(JSONC)
 	(cd $(JSONC); ./configure)
 	
-lib/$(JSONC).so: $(JSONC)/Makefile $(JSONC)
+lib/$(JSONC).so: $(JSONC)/Makefile 
 	mkdir -p lib
 	make -C $(JSONC)
 	cp $(JSONC)/.libs/libjson-c.* lib/
 
 libnl: 
-	wget http://www.infradead.org/~tgr/libnl/files/libnl-3.2.21.tar.gz
-	tar xzf libnl-3.2.21.tar.gz
-	mv libnl-3.2.21 libnl
+	https://github.com/mkschreder/juci-libnl.git libnl
 	(cd libnl; ./configure)
 	
 lib/libnl.so: libnl
@@ -42,7 +39,7 @@ lib/libnl.so: libnl
 	ln -s libnl-3.so lib/libnl.so
 	
 netifd: 
-	git clone http://git.openwrt.org/project/netifd.git netifd
+	git clone https://github.com/mkschreder/juci-netifd.git netifd
 
 bin/netifd: netifd
 	(cd netifd; cmake .; make) 
@@ -54,11 +51,14 @@ bin/ubus bin/libubus.so: lib/libubox.so lib/$(JSONC).so ubus
 	cp ubus/libubus* lib/
 	
 ubus: 
-	git clone git://nbd.name/luci2/ubus.git
+	git clone https://github.com/mkschreder/juci-ubus.git ubus
 
-ubox: lib/libubox.a; 
-	#git clone git://nbd.name/luci2/ubox.git $@
+ubox: 
+	git clone https://github.com/mkschreder/juci-ubox.git ubox
 
+bin/ubox: 
+	(cd ubox; cmake .; make)
+	
 #bin/ubox: ubox
 #	(cd ubox; cmake . ; make) 
 	
@@ -67,21 +67,21 @@ bin/questd: uci lib/libuci.so lib/libubus.so lib/libubox.so
 	cp questd/questd bin/ 
 	
 libubox: 
-	git clone http://git.openwrt.org/project/libubox.git $@
+	git clone https://github.com/mkschreder/juci-libubox.git libubox
 
-lib/libubox.so: $(JSONC) libubox
+lib/libubox.so: lib/$(JSONC).so libubox
 	(cd libubox; cmake .; make ) 
 	cp libubox/libubox.* libubox/libblobmsg_json.* lib/
 	
 rpcd: 
-	git clone https://github.com/mkschreder/openwrt-rpcd.git $@
+	git clone https://github.com/mkschreder/juci-rpcd.git $@
 
 bin/rpcd: rpcd 
 	(cd rpcd; cmake .; make)
 	cp rpcd/rpcd bin/
 	
 uci: 
-	git clone git://nbd.name/uci.git $@
+	git clone https://github.com/mkschreder/juci-uci.git $@
 
 bin/uci lib/libuci.so: uci
 	(cd uci; cmake .; make) 
@@ -89,7 +89,7 @@ bin/uci lib/libuci.so: uci
 	cp uci/libuci.* lib/
 	
 uhttpd: 
-	git clone git@iopsys.inteno.se:uhttpd2.git $@
+	git clone https://github.com/mkschreder/juci-uhttpd.git $@
 
 bin/uhttpd bin/uhttpd_ubus.so: uhttpd
 	(cd uhttpd; cmake .; make)

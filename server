@@ -1,25 +1,32 @@
-cd bin
-export LD_LIBRARY_PATH=.
+export LD_LIBRARY_PATH=build/lib/
+PATH="`pwd`/build/bin:${PATH}"
 
+echo "PATH:${PATH}"
 for i in "$@"
 do
 case $i in
 	stop)
-		killall -SIGHUP questd
-		killall -SIGHUP  netifd
-		killall -SIGHUP  ubusd
-		killall -SIGHUP  rpcd
-		killall -SIGHUP  uhttpd
+		killall questd
+		killall netifd
+		killall ubusd
+		killall rpcd
+		killall -SIGHUP uhttpd
 		shift # past argument=value
 	;;
 	start)
 		rm -rf /var/run/rpcd/
+		echo "UBUS"
 		ubusd &
+		sleep 0.2
+		echo "RPCD"
 		rpcd&
-		sleep 1
+		sleep 0.2
+		echo "QUEST"
 		questd&
+		echo "NETIF"
 		netifd&
-		uhttpd -p 8080 -u /ubus -h $(pwd)/../juci-source/htdocs/
+		echo "UHTTPD"
+		uhttpd -p localhost:8080 -u /ubus -h $(pwd)/build/www/
 		shift # past argument=value
 	;;
 	*)

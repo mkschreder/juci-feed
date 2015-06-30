@@ -1,5 +1,5 @@
 JSONC:=json-c
-CFLAGS:=-I$(shell pwd) -I$(PWD)/rpcd/include -I$(PWD)/uci -I$(PWD)/libubox -I$(PWD)/ubus -I$(PWD)/$(JSONC) -DJSONC
+export CFLAGS:=-I$(PWD) -I$(PWD)/rpcd/include -I$(PWD)/uci -I$(PWD)/libubox -I$(PWD)/ubus -I$(PWD)/$(JSONC) -DJSONC
 LDFLAGS:=-L$(shell pwd) -Lbuild/lib 
 BUILD_DIR:=build
 LIB_DIR:=$(BUILD_DIR)/lib

@@ -1,12 +1,14 @@
 JSONC:=json-c
-export CFLAGS:=-I$(PWD) -I$(PWD)/rpcd/include -I$(PWD)/uci -I$(PWD)/libubox -I$(PWD)/ubus -I$(PWD)/$(JSONC) -DJSONC
-LDFLAGS:=-L$(shell pwd) -Lbuild/lib 
+CFLAGS:=-I$(PWD) -I$(PWD)/rpcd/include -I$(PWD)/uci -I$(PWD)/libubox -I$(PWD)/ubus -I$(PWD)/$(JSONC) -DJSONC
+LDFLAGS:=-L$(PWD) -Lbuild/lib 
 BUILD_DIR:=build
 LIB_DIR:=$(BUILD_DIR)/lib
 BIN_DIR:=$(BUILD_DIR)/bin
 PROGS:=$(BIN_DIR)/uci $(BIN_DIR)/questd $(BIN_DIR)/rpcd $(BIN_DIR)/ubus $(BIN_DIR)/ubusd $(BIN_DIR)/uhttpd $(BIN_DIR)/netifd
 LIBS:= $(LIB_DIR)/libuci.so $(LIB_DIR)/libblobmsg_json.so $(LIB_DIR)/libubox.so $(LIB_DIR)/libubus.so $(LIB_DIR)/libuci.so $(LIB_DIR)/libnl.so
 
+export CC:=$(CC)
+export CFLAGS:=$(CFLAGS)
 export LDFLAGS:=-L$(PWD)/build/lib/
 
 all: $(BIN_DIR) $(LIB_DIR) progs; 
